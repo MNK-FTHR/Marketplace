@@ -16,17 +16,17 @@ class Product extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'price', 'category_id', 'photo'
+        'name', 'description', 'price', 'user_id', 'photo', 'end_date', 'sold'
     ];
 
 
-    public function category()
+    public function categories()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class);
     }
 
-    public function tags()
+    public function user()
     {
-        return $this->belongsToMany(Tag::class)->select(['name as text','id']);
+        return $this->belongsTo(User::class);
     }
 }

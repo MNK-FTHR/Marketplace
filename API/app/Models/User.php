@@ -19,7 +19,7 @@ class User extends Authenticatable // implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'type'
+        'name', 'email', 'password', 'role'
     ];
 
     /**
@@ -54,7 +54,10 @@ class User extends Authenticatable // implements MustVerifyEmail
     {
         return $this->belongsToMany(Role::class);
     }
-
+    public function products()
+    {
+        return $this->hasMany(Products::class);
+    }
     /**
      * Assigning User role
      *

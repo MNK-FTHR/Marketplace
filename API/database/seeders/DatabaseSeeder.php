@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
         $this->call(UsersTableSeeder::class);
         $this->call(CategoriesTableSeeder::class);
-        $this->call(TagsTableSeeder::class);
+        $this->call(RolesTableSeeder::class);
         $this->call(ProductsTableSeeder::class);
         //duplicate product for data 
         $this->call(ProductsTableSeeder::class);

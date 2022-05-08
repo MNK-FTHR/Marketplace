@@ -22,28 +22,28 @@ class CategoriesTableSeeder extends Seeder
         DB::table('categories')->insert(
             [
                 [
-                    'name' => 'Electrical Vehicle/e-Power',
-                    'description' => Str::words(50),
+                    'name' => 'Jeux vidéo',
+                    'slug' => 'vg',
                 ],
                 [
-                    'name' => 'Compact Car',
-                    'description' => Str::words(50),
+                    'name' => 'Paysage',
+                    'slug' => 'land',
                 ],
                 [
-                    'name' => 'Light Car',
-                    'description' => Str::words(50),
+                    'name' => 'Voiture',
+                    'slug' => 'car',
                 ],
                 [
-                    'name' => 'Minivan',
-                    'description' => Str::words(50),
+                    'name' => 'Handmade',
+                    'slug' => 'hm',
                 ],
                 [
-                    'name' => 'Sports & Specialty',
-                    'description' => Str::words(50),
+                    'name' => 'Sport',
+                    'slug' => 'sport',
                 ],
                 [
-                    'name' => 'Sedan',
-                    'description' => Str::words(50),
+                    'name' => 'Nourriture',
+                    'slug' => 'food',
                 ],
             ]
         );
