@@ -7,13 +7,13 @@
         
             <div class="card" v-if="$gate.isAdmin()">
               <div class="card-header">
-                <h3 class="card-title">User List</h3>
+                <h3 class="card-title">Liste des utilisateurs</h3>
 
                 <div class="card-tools">
                   
                   <button type="button" class="btn btn-sm btn-primary" @click="newModal">
                       <i class="fa fa-plus-square"></i>
-                      Add New
+                      Ajouter
                   </button>
                 </div>
               </div>
@@ -23,11 +23,10 @@
                   <thead>
                     <tr>
                       <th>ID</th>
-                      <th>Type</th>
-                      <th>Name</th>
+                      <th>Role</th>
+                      <th>Nom</th>
                       <th>Email</th>
-                      <th>Email Verified?</th>
-                      <th>Created</th>
+                      <th>Date de création</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -35,11 +34,10 @@
                      <tr v-for="user in users.data" :key="user.id">
 
                       <td>{{user.id}}</td>
-                      <td class="text-capitalize">{{user.type}}</td>
+                      <td class="text-capitalize">{{user.role}}</td>
                       <td class="text-capitalize">{{user.name}}</td>
                       <td>{{user.email}}</td>
-                      <td :inner-html.prop="user.email_verified_at | yesno"></td>
-                      <td>{{user.created_at}}</td>
+                      <td>{{user.created_at || "-"}}</td>
 
                       <td>
 
@@ -74,8 +72,8 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" v-show="!editmode">Create New User</h5>
-                    <h5 class="modal-title" v-show="editmode">Update User's Info</h5>
+                    <h5 class="modal-title" v-show="!editmode">Créer un nouvel utilisateur</h5>
+                    <h5 class="modal-title" v-show="editmode">Mettre à jour un utilisateur</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -86,7 +84,7 @@
                 <form @submit.prevent="editmode ? updateUser() : createUser()">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>Name</label>
+                            <label>Nom</label>
                             <input v-model="form.name" type="text" name="name"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                             <has-error :form="form" field="name"></has-error>
@@ -99,26 +97,26 @@
                         </div>
                     
                         <div class="form-group">
-                            <label>Password</label>
+                            <label>Mot de passe</label>
                             <input v-model="form.password" type="password" name="password"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('password') }" autocomplete="false">
                             <has-error :form="form" field="password"></has-error>
                         </div>
                     
                         <div class="form-group">
-                            <label>User Role</label>
-                            <select name="type" v-model="form.type" id="type" class="form-control" :class="{ 'is-invalid': form.errors.has('type') }">
-                                <option value="">Select User Role</option>
+                            <label>Role</label>
+                            <select name="role" v-model="form.role" id="role" class="form-control" :class="{ 'is-invalid': form.errors.has('role') }">
+                                <option value="">Selectionnez un Role</option>
                                 <option value="admin">Admin</option>
-                                <option value="user">Standard User</option>
+                                <option value="user">Utilisateur</option>
                             </select>
-                            <has-error :form="form" field="type"></has-error>
+                            <has-error :form="form" field="role"></has-error>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button v-show="editmode" type="submit" class="btn btn-success">Update</button>
-                        <button v-show="!editmode" type="submit" class="btn btn-primary">Create</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        <button v-show="editmode" type="submit" class="btn btn-success">Mettre à jour</button>
+                        <button v-show="!editmode" type="submit" class="btn btn-primary">Créer</button>
                     </div>
                   </form>
                 </div>
@@ -134,9 +132,10 @@
             return {
                 editmode: false,
                 users : {},
+                roles: {},
                 form: new Form({
                     id : '',
-                    type : '',
+                    role : '',
                     name: '',
                     email: '',
                     password: '',
@@ -217,6 +216,7 @@
 
             if(this.$gate.isAdmin()){
               axios.get("api/user").then(({ data }) => (this.users = data.data));
+              axios.get("api/roles").then(({ data }) => (this.roles = data.data));
             }
 
             this.$Progress.finish();

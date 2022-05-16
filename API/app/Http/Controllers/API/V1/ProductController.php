@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Http\Requests\Products\ProductRequest;
 use App\Models\Product;
-use App\Models\Tag;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class ProductController extends BaseController
@@ -30,7 +29,7 @@ class ProductController extends BaseController
      */
     public function index()
     {
-        $products = $this->product->latest()->with('category', 'tags')->paginate(10);
+        $products = $this->product->latest()->with('categories')->paginate(10);
 
         return $this->sendResponse($products, 'Product list');
     }
@@ -38,32 +37,28 @@ class ProductController extends BaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  App\Http\Requests\Products\ProductRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ProductRequest $request)
+    public function store(Request $request)
     {
         $product = $this->product->create([
             'name' => $request->get('name'),
             'description' => $request->get('description'),
             'price' => $request->get('price'),
-            'category_id' => $request->get('category_id'),
+            'user_id' => $request->get('user_id'),
+            'end_date' => $request->get('end_date'),
+            'sold' => false,
         ]);
 
         // update pivot table
-        $tag_ids = [];
-        foreach ($request->get('tags') as $tag) {
-            $existingtag = Tag::whereName($tag['text'])->first();
-            if ($existingtag) {
-                $tag_ids[] = $existingtag->id;
-            } else {
-                $newtag = Tag::create([
-                    'name' => $tag['text']
-                ]);
-                $tag_ids[] = $newtag->id;
+        $category_ids = [];
+        foreach ($request->get('categories') as $category) {
+            $existingcategory = Category::where('id', $category)->first();
+            if ($existingcategory) {
+                $category_ids[] = $existingcategory->id;
             }
         }
-        $product->tags()->sync($tag_ids);
+        $product->categories()->sync($category_ids);
 
         return $this->sendResponse($product, 'Product Created Successfully');
     }
@@ -76,7 +71,7 @@ class ProductController extends BaseController
      */
     public function show($id)
     {
-        $product = $this->product->with(['category', 'tags'])->findOrFail($id);
+        $product = $this->product->with(['categories'])->findOrFail($id);
 
         return $this->sendResponse($product, 'Product Details');
     }
@@ -88,26 +83,21 @@ class ProductController extends BaseController
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(ProductRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $product = $this->product->findOrFail($id);
 
         $product->update($request->all());
 
         // update pivot table
-        $tag_ids = [];
-        foreach ($request->get('tags') as $tag) {
-            $existingtag = Tag::whereName($tag['text'])->first();
-            if ($existingtag) {
-                $tag_ids[] = $existingtag->id;
-            } else {
-                $newtag = Tag::create([
-                    'name' => $tag['text']
-                ]);
-                $tag_ids[] = $newtag->id;
+        $category_ids = [];
+        foreach ($request->get('categories') as $category) {
+            $existingcategory = category::whereName($category['text'])->first();
+            if ($existingcategory) {
+                $category_ids[] = $existingcategory->id;
             }
         }
-        $product->tags()->sync($tag_ids);
+        $product->categories()->sync($categories_ids);
 
         return $this->sendResponse($product, 'Product Information has been updated');
     }

@@ -5,15 +5,15 @@
 
           <div class="col-12">
         
-            <div class="card">
+            <div class="card" v-if="$gate.isAdmin()">
               <div class="card-header">
-                <h3 class="card-title">Category List</h3>
+                <h3 class="card-title">Liste des catégories</h3>
 
                 <div class="card-tools">
                   
-                  <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addProduct">
+                  <button type="button" class="btn btn-sm btn-primary" @click="newModal">
                       <i class="fa fa-plus-square"></i>
-                      Add New
+                      Ajouter
                   </button>
                 </div>
               </div>
@@ -23,28 +23,41 @@
                   <thead>
                     <tr>
                       <th>ID</th>
-                      <th>Name</th>
-                      <th>Description</th>
-                      <!-- <th>Photo</th> -->
+                      <th>Nom</th>
+                      <th>Slug</th>
+                      <th>Date de création</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                     <tr v-for="product in products.data" :key="product.id">
+                     <tr v-for="category in categories.data" :key="category.id">
 
-                      <td>{{product.id}}</td>
-                      <td>{{product.name}}</td>
-                      <td>{{product.description | truncate(30, '...')}}</td>
+                      <td>{{category.id}}</td>
+                      <td class="text-capitalize">{{category.name}}</td>
+                      <td>{{category.slug}}</td>
+                      <td>{{category.created_at|myDate}}</td>
                       <td>
+
+                        <a href="#" @click="editModal(category)">
+                            <i class="fa fa-edit blue"></i>
+                        </a>
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
               <!-- /.card-body -->
+              <div class="card-footer">
+                  <pagination :data="categories" @pagination-change-page="getResults"></pagination>
+              </div>
             </div>
             <!-- /.card -->
           </div>
+        </div>
+
+
+        <div v-if="!$gate.isAdmin()">
+            <not-found></not-found>
         </div>
 
         <!-- Modal -->
@@ -52,30 +65,34 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Create New Product</h5>
+                    <h5 class="modal-title" v-show="!editmode">Créer</h5>
+                    <h5 class="modal-title" v-show="editmode">Mettre à jour</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
 
-                <form @submit.prevent="createProduct">
+                <!-- <form @submit.prevent="createUser"> -->
+
+                <form @submit.prevent="editmode ? updateCategory() : createCategory()">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>Name</label>
+                            <label>Nom</label>
                             <input v-model="form.name" type="text" name="name"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                             <has-error :form="form" field="name"></has-error>
                         </div>
                         <div class="form-group">
-                            <label>Description</label>
-                            <input v-model="form.description" type="text" name="description"
+                            <label>Slug</label>
+                            <input v-model="form.slug" type="text" name="description"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('description') }">
-                            <has-error :form="form" field="description"></has-error>
+                            <has-error :form="form" field="slug"></has-error>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        <button v-show="editmode" type="submit" class="btn btn-success">Mettre à jour</button>
+                        <button v-show="!editmode" type="submit" class="btn btn-primary">Créer</button>
                     </div>
                   </form>
                 </div>
@@ -89,56 +106,93 @@
     export default {
         data () {
             return {
-              categories : {},
-              // Create a new form instance
-              form: new Form({
-                  id : '',
-                  name: '',
-                  description: '',
-              })
+                editmode: false,
+                categories : {},
+                form: new Form({
+                    id : '',
+                    name: '',
+                    slug: '',
+                })
             }
         },
         methods: {
 
-          loadCategories(){
-            // if(this.$gate.isAdmin()){
-              axios.get("api/category").then(({ data }) => (this.categories = data.data));
-            // }
-          },
-          
-          createCategory(){
-              this.$Progress.start();
+            getResults(page = 1) {
 
-              this.form.post('api/category')
-              .then((data)=>{
-                  $('#addNew').modal('hide');
+                  this.$Progress.start();
+                  
+                  axios.get('/api/category?page=' + page).then(({ data }) => (this.categories = data.data));
 
-                  Toast.fire({
-                        icon: 'success',
-                        title: data.data.message
-                    });
                   this.$Progress.finish();
-                  this.loadCategories();
+            },
+            updateCategory(){
+                this.$Progress.start();
+                this.form.put('/api/category/'+this.form.id)
+                .then((response) => {
+                    // success
+                    $('#addNew').modal('hide');
+                    Toast.fire({
+                      icon: 'success',
+                      title: response.data.message
+                    });
+                    this.$Progress.finish();
+                        //  Fire.$emit('AfterCreate');
 
-              })
-              .catch(()=>{
+                    this.loadCategories();
+                })
+                .catch(() => {
+                    this.$Progress.fail();
+                });
 
-                  Toast.fire({
-                      icon: 'error',
-                      title: 'Some error occured! Please try again'
-                  });
-              })
-          }
+            },
+            editModal(category){
+                this.editmode = true;
+                this.form.reset();
+                $('#addNew').modal('show');
+                this.form.fill(category);
+            },
+            newModal(){
+                this.editmode = false;
+                this.form.reset();
+                $('#addNew').modal('show');
+            },
+
+            loadCategories(){
+                if(this.$gate.isAdmin()){
+                    axios.get("/api/category").then(({ data }) => (this.categories = data.data));
+                }
+            },
+            
+            createCategory(){
+
+                this.form.post('/api/category')
+                .then((response)=>{
+                    $('#addNew').modal('hide');
+
+                    Toast.fire({
+                            icon: 'success',
+                            title: response.data.message
+                    });
+
+                    this.$Progress.finish();
+                    this.loadCategories();
+                })
+                .catch(()=>{
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Some error occured! Please try again'
+                    });
+                })
+            }
 
         },
         mounted() {
-            
+            console.log('Component mounted.')
         },
         created() {
+
             this.$Progress.start();
-
             this.loadCategories();
-
             this.$Progress.finish();
         }
     }

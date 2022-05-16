@@ -37,7 +37,7 @@ class AuthServiceProvider extends ServiceProvider
             // }
 
             // for simplicity
-            return $user->type === 'admin';
+            return $user->role === 'admin';
         });
 
         Gate::define('isUser', function ($user) {
@@ -46,7 +46,7 @@ class AuthServiceProvider extends ServiceProvider
             // }
 
             // for simplicity
-            return $user->type === 'user';
+            return $user->role === 'user';
         });
     }
 }

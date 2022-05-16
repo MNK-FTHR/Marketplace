@@ -7,22 +7,17 @@
                     <div class="card">
                         <div class="card-header p-2">
                             <ul class="nav nav-pills">
-                                <li class="nav-item"><a class="nav-link" href="#activity" data-toggle="tab">Activity</a></li>
                                 <li class="nav-item"><a class="nav-link active show" href="#settings" data-toggle="tab">Settings</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#change-password" data-toggle="tab">Change Password</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#change-password" data-toggle="tab">Mettre à jour mon mot de passe</a></li>
                             </ul>
                         </div><!-- /.card-header -->
                         <div class="card-body">
                             <div class="tab-content">
-                                <!-- Activity Tab -->
-                                <div class="tab-pane" id="activity">
-                                    <h3 class="text-center">Display User Activity</h3>
-                                </div>
                                 <!-- Setting Tab -->
                                 <div class="tab-pane active show" id="settings">
                                     <form @click.prevent="updateInfo" class="form-horizontal">
                                         <div class="form-group">
-                                            <label for="inputName" class="col-sm-2 control-label">Name</label>
+                                            <label for="inputName" class="col-sm-2 control-label">Nom</label>
 
                                             <div class="col-sm-12">
                                             <input type="" v-model="form.name" class="form-control" id="inputName" placeholder="Name" :class="{ 'is-invalid': form.errors.has('name') }">
@@ -39,8 +34,8 @@
                                         </div>
                                         <div class="form-group">
                                             <div class="col-md-12">
-                                                <button type="submit" class="btn btn-success">Update Profile</button>
-                                                <div class="float-right d-sm-inline text-muted">Member since: <span>{{form.created_at|myDate}}</span></div>
+                                                <button type="submit" class="btn btn-success">Mettre à jour mon profil</button>
+                                                <div class="float-right d-sm-inline text-muted">Membre depuis: <span>{{form.created_at|myDate || 'eternity'}}</span></div>
                                             </div>
                                         </div>
                                     </form>
@@ -50,14 +45,14 @@
                                 <div class="tab-pane" id="change-password">
                                     <form class="form-horizontal">
                                     <div class="form-group">
-                                        <label for="current_password" class="col-sm-2 control-label">Current Password</label>
+                                        <label for="current_password" class="col-sm-3 control-label">Mot de passe actuel</label>
 
                                         <div class="col-sm-12">
                                             <input type="password"
                                                 v-model="form.current_password"
                                                 class="form-control"
                                                 id="current_password"
-                                                placeholder="Current Password"
+                                                placeholder="Mot de passe actuel"
                                                 :class="{ 'is-invalid': form.errors.has('current_password') }"
                                             >
                                             <has-error :form="form" field="current_password"></has-error>
@@ -65,14 +60,14 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="new_password" class="col-sm-2 control-label">New Password</label>
+                                        <label for="new_password" class="col-sm-3 control-label">Nouveau mot de passe</label>
 
                                         <div class="col-sm-12">
                                             <input type="password"
                                                 v-model="form.new_password"
                                                 class="form-control"
                                                 id="new_password"
-                                                placeholder="New Password"
+                                                placeholder="Nouveau Mot de passe"
                                                 :class="{ 'is-invalid': form.errors.has('new_password') }"
                                             >
                                             <has-error :form="form" field="new_password"></has-error>
@@ -80,14 +75,14 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="confirm_password" class="col-sm-2 control-label">Confirm Password</label>
+                                        <label for="confirm_password" class="col-sm-3 control-label">Confirmez votre mot de passe</label>
 
                                         <div class="col-sm-12">
                                             <input type="password"
                                                 v-model="form.confirm_password"
                                                 class="form-control"
                                                 id="confirm_password"
-                                                placeholder="Confirm Password"
+                                                placeholder="Confirmez votre mot de passe"
                                                 :class="{ 'is-invalid': form.errors.has('confirm_password') }"
                                             >
                                             <has-error :form="form" field="confirm_password"></has-error>
@@ -96,7 +91,7 @@
 
                                     <div class="form-group">
                                         <div class="col-sm-offset-2 col-sm-12">
-                                        <button @click.prevent="updatePassword" type="submit" class="btn btn-success">Update Password</button>
+                                        <button @click.prevent="updatePassword" type="submit" class="btn btn-success">Mettre à jour mon mot de passe</button>
                                         </div>
                                     </div>
                                     </form>

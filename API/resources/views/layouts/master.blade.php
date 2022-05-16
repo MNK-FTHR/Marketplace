@@ -7,7 +7,7 @@
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <title>{{ config('app.name', 'Laravel') }}</title>
+  <title>{{ config('app.name', 'Marketplace') }}</title>
   
 
   <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
@@ -43,9 +43,9 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <router-link to="/dashboard" class="brand-link">
-      <img src="{{ asset('/images/logo.PNG') }}" alt="The Logo" class="brand-image img-circle elevation-3"
+      <img src="{{ asset('/images/logo.jpg') }}" alt="The Logo" class="brand-image img-circle elevation-3"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">{{ config('app.name', 'Laravel') }}</span>
+      <span class="brand-text font-weight-light">{{ config('app.name', 'Marketplace') }}</span>
     </router-link>
 
     <!-- Sidebar -->
@@ -60,7 +60,7 @@
 
                   {{ Auth::user()->name }}
                   <span class="d-block text-muted">
-                    {{ Ucfirst(Auth::user()->type) }}
+                    {{ Ucfirst(Auth::user()->role) }}
                   </span>
               </div>
           </div>
